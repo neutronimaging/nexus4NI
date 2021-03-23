@@ -1,4 +1,4 @@
-# Promoting the use of the NeXus file format for Neutron Imagning
+# The NeXus file format for Neutron Imagning
 The [Working group](Working-group) who is maintaining this repository.
 
 ## [About the format](About-the-format)
