@@ -2,24 +2,24 @@ Here we will present how data for different experiment methods are about to be s
 
 # White beam techniques
 
-## Radiography (**Jean**)
+## Radiography (__Jean__)
 
-## Tomography (**Anders**, Jean)
+## Tomography (__Anders__, Jean)
 
-## Multi-modal radiography (**Alessandro**, Anders)
+## Multi-modal radiography (__Alessandro__, Anders)
 
-## Multi-modal Tomography (Alessandro, **Anders**)
+## Multi-modal Tomography (Alessandro, __Anders__)
 
 ## Neutron grating interferometry (Simon/Matteo)
 It is a matter of discussion how to categorize this one.
 
-## Polarized neutron imaging (**Anders**/Alessandro/Soren)
+## Polarized neutron imaging (__Anders__/Alessandro/Soren)
 
 # Wavelength resolved techniques 
 
-## Diffraction based (**Soren**)
+## Diffraction based (__Soren__)
 
-## Resonance (**Anna**, Alex)
+## Resonance (__Anna__, Alex)
 
 
 
