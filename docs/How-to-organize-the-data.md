@@ -38,10 +38,10 @@ With multi-modal imaging one or more detectors generate data simultaneaously or 
 ### Radiography (__Alessandro__, Anders)
  
 
-### Tomography (Alessandro, __Anders__)
+### Tomography (__Anders__, Alessandro)
 
 
-## Neutron grating interferometry (Simon/Matteo)
+## Neutron grating interferometry (__Simon__, Matteo)
 It is a matter of discussion how to categorize this one.
 The phase steps for a frame shall be stored in a single file with the grating position stored in a data vector.
 For time series it can either make sense to use a single file for all frames or to split it into one file per frame.
@@ -57,7 +57,7 @@ Two acquisition schemes can be used for tomography with grating interferometry:
 - A full set of phase steps before moving to the next view angle.
 
 
-## Polarized neutron imaging (__Anders__/Alessandro/Soren)
+## Polarized neutron imaging (__Anders__, Alessandro, Soren)
 
 ### nGI with polarized neutrons
 
