@@ -8,9 +8,9 @@ Here we will present how data for different experiment methods are about to be s
 
 ## Time-series 
 
-## Bimodal radiography
+## Multi-modal radiography
 
-## Bimodal Tomography
+## Multi-modal Tomography
 
 ## Neutron grating interferometry 
 It is a matter of discussion how to categorize this one.
