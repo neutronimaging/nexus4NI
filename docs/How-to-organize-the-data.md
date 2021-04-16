@@ -15,7 +15,9 @@ Here we will present how data for different experiment methods are about to be s
 ## Neutron grating interferometry 
 It is a matter of discussion how to categorize this one.
 
+## Polarized neutron imaging
+
 # Wavelength resolved techniques
 
-# Polaried neutron imaging
+
 
