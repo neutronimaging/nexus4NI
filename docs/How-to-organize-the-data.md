@@ -15,14 +15,44 @@ Output: A single file or multiple files with raw image data possibly organized i
 # White beam techniques
 
 ## Radiography (__Jean__)
-Radiography is the fundamental acquisition mode for white beam imaging. A single or several frames per file.	
-A typical acquisition includes:
-- Reference data
-  - Flat field/Open beam
-  - Dark current
-  - Flat field with black bodies (optional)
-- Sample images  
-- Sample images with black bodies (optional)
+
+This mode means 1 or several images are acquired with white beam. Example of experiment when such a mode is used are
+* Transmission image of an object for which no changes are measurable over the duration of the measurement
+* Set of images acquired when condition of object changed over time due to internal changes in the sample or external changes applied to it (gaz pressure, quantity of water, temperature…)
+* Set of images acquired to cover full sample
+
+Data acquired that need to be connected
+* Sample data sets (mandatory)
+* Open beam/flat field (mandatory)
+* Dark field (optional)
+* Flat field with black bodies (optional)
+
+Metadata:
+* Detector type
+* instrument
+* Data mode (“sample”, “open beam”, “dark current”)
+* Experiment proposal number
+* Aperture position
+* Acquisition time
+* Acquisition starting time
+* Motor position
+* User custom metadata (defined at the DAS level) 
+    * Sample name
+    * type
+    * size
+* Diffuser type
+* Diffuser thickness
+* Lens used
+* Scintillator thickness
+* ….
+* All metadata recorded by DAS automatically 
+
+![Screen Shot 2021-04-19 at 3 03 13 PM](https://user-images.githubusercontent.com/1138324/115289646-cf11ae80-a120-11eb-9df9-4b4bc4102d1d.png)
+![Screen Shot 2021-04-19 at 3 03 22 PM](https://user-images.githubusercontent.com/1138324/115289648-cfaa4500-a120-11eb-904c-a512e6b8c430.png)
+![Screen Shot 2021-04-19 at 3 03 30 PM](https://user-images.githubusercontent.com/1138324/115289651-cfaa4500-a120-11eb-9682-d21fd44974e3.png)
+![Screen Shot 2021-04-19 at 3 03 38 PM](https://user-images.githubusercontent.com/1138324/115289653-cfaa4500-a120-11eb-8d4f-852a4bf53464.png)
+![Screen Shot 2021-04-19 at 3 03 47 PM](https://user-images.githubusercontent.com/1138324/115289654-d042db80-a120-11eb-8b17-1f78e2b3988e.png)
+![Screen Shot 2021-04-19 at 3 04 02 PM](https://user-images.githubusercontent.com/1138324/115289656-d042db80-a120-11eb-9ed0-0630ea3ec13c.png)
 
 ## Tomography (__Anders__, Jean)
 One file containing all projections for a single tomography. This is usually between 100-1500 frames. It is important to provide a turn-table angle per projection as a data vector (this is guaranteed in the NXTomo format).
