@@ -101,6 +101,8 @@ References from ToF can be stored in the same manner as for white beam, but now 
 ## Diffraction based (__Soren__)
 
 ## Resonance (__Anna__, Alex)
+The natural data structure for resonances imaging (at least from Anton's MCP-Timepix detector) is
+2D Resonance imaging:
 
 
 
