@@ -101,8 +101,24 @@ References from ToF can be stored in the same manner as for white beam, but now 
 ## Diffraction based (__Soren__)
 
 ## Resonance (__Anna__, Alex)
-The natural data structure for resonances imaging (at least from Anton's MCP-Timepix detector) is
-2D Resonance imaging:
+The basic data structure for resonances imaging (at least from Anton's MCP-Timepix detector) is the following:
+* _ShutterTimes.txt -> Text file containing shutter values for the detector.
+      * These values are first read in with the shutterValues.txt file and determine what the Time-of-flight values are for any images to be recorded.  
+* _ShutterCounts.txt -> Total number of counts obseved over the full FOV within each shutter. 
+* _spectra.txt -> A tab separated text file contianing the time-of-flight value for each image along with an integrate count over the full FOV.
+* Several hundereds to thousands of fits files corresponding to the select shutter values. 
+
+With this basic structure, the usual components of a radiography measurement are recorded (white beam, sample image, and dark fields).  All of this is dropped into a single folder. Most likely we will need to script up a sorter to back up raw data (fits & txt files) while also generating new NEXUS files. 
+
+I think the most important thing here in terms of the data structure with a new format is having a ntuple structure where we would have an image branch and a corresponding TOF branch, which could then be looped through. 
+
+Additionally there is definetly some meta data that I can think of that currently gets manually recorded. 
+* Flight path length 
+* Timepix chip temperatures
+* Sample info (along with tracking number)
+* proton beam current from spallation source
+* There are probably other things that I'm missing. 
+
 
 
 
