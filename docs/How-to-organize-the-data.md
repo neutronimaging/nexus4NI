@@ -66,10 +66,15 @@ For tomography time series there are three options depending on the acquisition 
 With multi-modal imaging one or more detectors generate data simultaneaously or in sequence. This data is in the first understanding images, but it could in priciple also be other sensors like environment data, weights, etc.
 
 ### Radiography (__Alessandro__, Anders)
- 
+ Same as for single-mode radiography, but time stamping is of particular importance. 
+ Darks and flats should ideally be acquired both with and without the other radiation on and in the same configurationm as the operational one.
+ In case of x-ray imaging, current and voltage of the source, use of filers or fas shutters, relative distances between source, detector and object as well as relative angle between the two radiations are essential
+ The two image sizes won't necessarily match, so images should be two distinct subsets. 
+ Can be operated in full simultaneity or in alternance
 
 ### Tomography (__Anders__, Alessandro)
-
+Combination of multi-modal radiography and single mode tomograpy. Again time stamping of projections, and their acquisition angles and ionising radiation nature is crucial. 
+The two volumes need to be registered (saptially aligned) a pre-alignemnt based on instrument parameters can be done but to improve further this pre-alignemnt, some techniques such as generalised DIC can be employed. The reconstructed volumes should ideally be at least pre-aligned.
 
 ## Neutron grating interferometry (__Simon__, Matteo)
 It is a matter of discussion how to categorize this one.
