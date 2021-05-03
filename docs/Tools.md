@@ -8,3 +8,5 @@ Here we are going to provide a list of software tools that are compatible with t
 | Scipp | Data reduction |Python | https://scipp.github.io/ | To be checked | ESS/ISIS |
 | Mantid | Data reduction |GUI/Python | https://www.mantidproject.org | To be checked | International consortium |
 |ImageJ| Image processing| GUI/Java| https://fiji.sc | Plugin available | Open source project |
+| Dawn | Data Reduction | GUI/Python | https://dawnsci.org/ |Some NeXus support | Diamond Light Source |
+| Soleil Data Browser | Visualisation | GUI | https://www.google.com/search?client=firefox-b-d&q=soleil+data+browser | Some NeXus support | Raphaël GIRARDOT |
