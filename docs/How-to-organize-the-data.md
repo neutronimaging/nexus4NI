@@ -77,17 +77,18 @@ Combination of multi-modal radiography and single mode tomograpy. Again time sta
 The two volumes need to be registered (saptially aligned) a pre-alignemnt based on instrument parameters can be done but to improve further this pre-alignemnt, some techniques such as generalised DIC can be employed. The reconstructed volumes should ideally be at least pre-aligned.
 
 ## Neutron grating interferometry (__Simon__, Matteo)
-The most relevant parameters of an nGI measurement are the correlation length and the anisotropy. The correlation length depends on the wavelength, the position of the sample and the specific nGI setup.
-As nGI is only sensitive to scattering perpendicular to the grating lines, the anisotropy in the scattering of the sample is determined by the relative rotation of the sample to the slits of the gratings.
+The most relevant parameters of an nGI measurement are the correlation length and the orientation of the sample to the grating lines.
+The correlation length depends on the wavelength, the position of the sample and the specific nGI setup.
+As nGI is only sensitive to scattering perpendicular to the grating lines, an anisotropy in the scattering of the sample is determined by the relative rotation of the sample to the slits of the gratings.
 For continuous reactor sources we (ANTARES) perform a full phase stepping scan for each correlation length and/or orientation of the sample.
 A correlation length scan is performed by variation of the position of the sample and an anisotropy scan by simultaneous rotation of all gratings (or the sample).
 It would be the task of the instrument control software to extract the necessary parameters and calculate the correlation length (be it from a change in position, wavelength or of the general setup) as well as the angle between sample and grating lines.
 
-Every nGI measurement performs a phase scan by stepping through the period of one grating.
-Every nGI phase scan has a corresponding reference/open-beam phase scan.
-Not every phase scan has necessarily a new reference scan.
-Every single image has a corresponding offset/dark image.
-Not every image has necessarily a new offset image.
+Every nGI measurement performs a phase scan by stepping through the period of one grating.\
+Every nGI phase scan has a corresponding reference/open-beam phase scan.\
+Not every phase scan has necessarily a new reference scan.\
+Every single image has a corresponding offset/dark image.\
+Not every image has necessarily a new offset image.\
 
 A single phase scan should always be stored in the same file with the grating position stored in a data vector.
 The reference scans and the offset images should be kept separate, as they can be used for different phase scans.
@@ -149,7 +150,7 @@ It should therefore be possible to sort ToF binned data into the above mentioned
 ### Tomography with grating interferometry	
 Two acquisition schemes can be used for tomography with grating interferometry:
 
-Full CT-turn for each phase step -> possible large errors due to drift in grating positions
+Full CT-turn for each phase step -> possible large errors due to drift in grating positions\
 Full phase scan for each step + reference scan every few steps
 
 Any of the methods can be reordered in the scheme as described above by looking at the tomography as a scan of an external parameter.
