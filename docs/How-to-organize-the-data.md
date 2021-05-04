@@ -65,7 +65,7 @@ For tomography time series there are three options depending on the acquisition 
 ### Reference data
 The minimum of reference data for a tomography experiment is the __flat field__ image. Most detectors also require __dark current__ images, some detectors are calibrated to acquire images with zero-bias images. These images are traditional for any neutron imaging experiment.
 
-Sample and background scattering is the origin of biases in the images. It is possible to correct using different methods, at PSI the methods described in the publications by [Boillat at al.](https://doi.org/10.1364/OE.26.015769) [Carminari et al](https://doi.org/10.1371/journal.pone.0210300)
+Sample and background scattering is the origin of biases in the images. It is possible to correct using different methods, at PSI the methods described in the publications by [Boillat at al.](https://doi.org/10.1364/OE.26.015769) and [Carminari et al](https://doi.org/10.1371/journal.pone.0210300). These methods require two additional references with a black body grid inserted (with and without samples present). 
 
 ## Multi-modal imaging 
 With multi-modal imaging one or more detectors generate data simultaneaously or in sequence. This data is in the first understanding images, but it could in priciple also be other sensors like environment data, weights, etc.
