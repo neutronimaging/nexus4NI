@@ -77,29 +77,74 @@ Combination of multi-modal radiography and single mode tomograpy. Again time sta
 The two volumes need to be registered (saptially aligned) a pre-alignemnt based on instrument parameters can be done but to improve further this pre-alignemnt, some techniques such as generalised DIC can be employed. The reconstructed volumes should ideally be at least pre-aligned.
 
 ## Neutron grating interferometry (__Simon__, Matteo)
-The most relevant parameters of an nGI measurement are the correlation length and the anisotropy. The correlation length depends on the wavelength, the position of the sample and the specific nGI setup. The anisotropy is given by the relative rotation of the sample to the slits of the gratings.
-For continuous reactor sources we (ANTARES) perform a full phase stepping scan for each correlation length and/or anisotropy orientation, as a correlation length scan is performed by variation of the position of the sample and an anisotropy scan by simultaneous rotation of all gratings (or the sample).
+The most relevant parameters of an nGI measurement are the correlation length and the anisotropy. The correlation length depends on the wavelength, the position of the sample and the specific nGI setup.
+As nGI is only sensitive to scattering perpendicular to the grating lines, the anisotropy in the scattering of the sample is determined by the relative rotation of the sample to the slits of the gratings.
+For continuous reactor sources we (ANTARES) perform a full phase stepping scan for each correlation length and/or orientation of the sample.
+A correlation length scan is performed by variation of the position of the sample and an anisotropy scan by simultaneous rotation of all gratings (or the sample).
 It would be the task of the instrument control software to extract the necessary parameters and calculate the correlation length (be it from a change in position, wavelength or of the general setup) as well as the angle between sample and grating lines.
+
+Every nGI measurement performs a phase scan by stepping through the period of one grating.
 Every nGI phase scan has a corresponding reference/open-beam phase scan.
 Not every phase scan has necessarily a new reference scan.
+Every single image has a corresponding offset/dark image.
+Not every image has necessarily a new offset image.
 
-~WIP Simon~
+A single phase scan should always be stored in the same file with the grating position stored in a data vector.
+The reference scans and the offset images should be kept separate, as they can be used for different phase scans.
+However, it would be beneficial to store all data of a external parameter scan (e.g. temperature, B-field) in a single Nexus file with the option to have anisotropy and correlation length scans for each measurement.
+This would then include reference scans and offset images.
 
-DI for every phase scan. phase scan == frame?
+Example:
+```
+temperature_scan/
+├─ temperature1/
+│  ├─ correlationlength1/
+│  │  ├─ phasescan/
+│  │  │  ├─ step1 (linkto_off1)
+│  │  │  ├─ step2 (linkto_off1)
+│  │  │  ├─ ...
+│  │  │  ├─ step_values
+│  │  ├─ linkto_ref1
+│  ├─ correlationlength2/
+│  │  ├─ anisotropy1/
+│  │  │  ├─ phasescan/
+│  │  │  ├─ linkto_ref1
+│  │  ├─ anisotropy2/
+│  │  │  ├─ phasescan/
+│  │  │  ├─ linkto_ref2
+│  │  ├─ ...
+│  │  ├─ anisotropy_values
+│  ├─ correlationlength_values
+├─ temperature2/
+│  ├─ phasescan/
+│  │  ├─ ...
+│  ├─ linkto_ref2
+├─ temperature3/
+│  ├─ ...
+├─ temperature_values
+├─ referencescans/
+│  ├─ ref1/
+│  │  ├─ step1 (linkto_off2)
+│  │  ├─ ...
+│  │  ├─ step_values
+│  ├─ ref2/
+│  │  ├─ ...
+│  ├─ ...
+├─ offsetimages/
+│  ├─ off1
+│  ├─ off2
+│  ├─ ...
 
-Store correlation length AND raw parameters. Sample in front of G1 or behind?
+```
+
+### Metadata
+Store correlation length AND raw parameters. Is the sample in front of G1 or behind?
 All grating properties and all dimensions of the setup, i.e. everything you need to understand potential errors in the measurements.
-
-It is a matter of discussion how to categorize this one.
-The phase steps for a frame shall be stored in a single file with the grating position stored in a data vector. Additionally we need to store the correlation length and rotation of the sample relative to the gratings.
-Same for the reference frame.
-For time series it can either make sense to use a single file for all frames or to split it into one file per frame.
+Same for the reference phase scan.
 
 ### Wavelength resolved nGI
 Wavelength resolved nGI means correlation length resolved nGI.
-
-For wavelength resolved nGI with few frames it better to store all phase steps and ToF bins.
-Depending on the length of the time series and the number of ToF bins, there should be an option to store all data in a single file or one file per time step.
+It should therefore be possible to sort ToF binned data into the above mentioned scheme.
 
 ### Tomography with grating interferometry	
 Two acquisition schemes can be used for tomography with grating interferometry:
@@ -107,9 +152,10 @@ Two acquisition schemes can be used for tomography with grating interferometry:
 Full CT-turn for each phase step -> possible large errors due to drift in grating positions
 Full phase scan for each step + reference scan every few steps
 
-- A full CT-turn for each phase step. Resulting in as many files as phase steps. This scheme is most common as it requires the least translation steps of the gratings.
-- A full set of phase steps before moving to the next view angle.
+Any of the methods can be reordered in the scheme as described above by looking at the tomography as a scan of an external parameter.
 
+If the filesize would be too large to handle, we can link multiple files.
+In any case, the smallest subset of data would be a phase scan.
 
 ## Polarized neutron imaging (__Anders__, Alessandro, Soren)
 
