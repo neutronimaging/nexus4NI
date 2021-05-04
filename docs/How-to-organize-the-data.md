@@ -243,9 +243,15 @@ I think the most important thing here in terms of the data structure with a new 
 
 Additionally there is definetly some meta data that I can think of that currently gets manually recorded. 
 * Flight path length 
+* Detector type
 * Timepix chip temperatures
 * Sample info (along with tracking number)
 * proton beam current from spallation source
+* Acquisition mode (event/histogram mode)
+* Number of frames
+* Number of events per frame
+* Time bin width
+* Detector active area thickness
 * There are probably other things that I'm missing. 
 
 
