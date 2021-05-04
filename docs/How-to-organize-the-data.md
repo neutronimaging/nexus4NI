@@ -253,8 +253,12 @@ Additionally there is definetly some meta data that I can think of that currentl
 * proton beam current from spallation source
 * There are probably other things that I'm missing. 
 
-
-
+LANSCE Specific info: 
+We perform neutron time-of-flight calibration runs with thick tungsten plates (create deep and opaque resonances). The opaque resonances also help charaterize energy dependent backgrounds. This tungsten plate goes in and out of the beam in the open beam (and sample images if you are tryign to charatize energy-dependent background frm the sample). 
+* Open beam without tungsten
+* Open beam with tungsten
+* Sample without tungsten
+* Sample with tungsten
 
 
 
