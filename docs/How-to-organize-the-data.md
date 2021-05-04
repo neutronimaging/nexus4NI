@@ -88,7 +88,7 @@ Every nGI measurement performs a phase scan by stepping through the period of on
 Every nGI phase scan has a corresponding reference/open-beam phase scan.\
 Not every phase scan has necessarily a new reference scan.\
 Every single image has a corresponding offset/dark image.\
-Not every image has necessarily a new offset image.\
+Not every image has necessarily a new offset image.
 
 A single phase scan should always be stored in the same file with the grating position stored in a data vector.
 The reference scans and the offset images should be kept separate, as they can be used for different phase scans.
