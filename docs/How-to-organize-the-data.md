@@ -60,7 +60,12 @@ One file containing all projections for a single tomography. This is usually bet
 For tomography time series there are three options depending on the acquisition scheme: 
 - With step-wise turning, it is possible to produce one file per tomography. In general, it would make more sense to store all projections in a single file.
 - With on-the-fly (continuous turning at constant speed) either one file with all projections can be used. Alternatively, by using a trigger signal when a turn is completed it is possible to start a new file per turn.
-- Golden ratio acquisition requires all projections to be in the same file as this is an infinite series of non-overlapping projections.
+- Golden ratio acquisition requires all projections to be in the same file as this is an infinite series of non-overlapping projections angles.
+
+### Reference data
+The minimum of reference data for a tomography experiment is the __flat field__ image. Most detectors also require __dark current__ images, some detectors are calibrated to acquire images with zero-bias images. These images are traditional for any neutron imaging experiment.
+
+Sample and background scattering is the origin of biases in the images. It is possible to correct using different methods, at PSI the methods described in the publications by [Boillat at al.](https://doi.org/10.1364/OE.26.015769) [Carminari et al](https://doi.org/10.1371/journal.pone.0210300)
 
 ## Multi-modal imaging 
 With multi-modal imaging one or more detectors generate data simultaneaously or in sequence. This data is in the first understanding images, but it could in priciple also be other sensors like environment data, weights, etc.
