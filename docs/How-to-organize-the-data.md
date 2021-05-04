@@ -160,6 +160,50 @@ In any case, the smallest subset of data would be a phase scan.
 
 ## Polarized neutron imaging (__Anders__, Alessandro, Soren)
 
+In one acquisition:
+
+Beam
+	   Mono-chromatic / ToF
+Polarizer
+      ID 
+      Name
+      Type (3He, (super-)mirror or crystal)
+      Size
+      Position
+      State 
+Spin-flipper ()
+      ID
+      Name
+      Type (X, Y or Z rotation axis, can also be defined by a rotation matrix)
+      Size
+      Position
+      State (ON/OFF)
+Spin-rotator (90 degrees) – multiple entries; typically used before and after the sample
+   ID
+   Name
+   Type (X, Y or Z rotation axis, can also be defined by a rotation matrix)
+   Size (Opening) 
+   Position (Center)
+   State (ON/OFF)
+Analyzer
+   ID 
+   Name
+   Type (3He, (super-)mirror or crystal)
+   Size
+   Position
+   State
+Rotation stage
+Translation stage
+Sample environment
+DetectorType 
+Image_stack
+
+
+After reconstruction, reconstructed 3D voxel :
+   Representation of scalars, vectors and tensors
+   Spatial coordinates
+   Time
+
 ### nGI with polarized neutrons
 
 # Wavelength resolved techniques 
@@ -170,6 +214,20 @@ If the number of ToF bins is limited (e.g. to study a single Bragg edge): Store 
 References from ToF can be stored in the same manner as for white beam, but now with all ToF bin also stored as one entry per frame.
 
 ## Diffraction based (__Soren__)
+
+Can mostly be obtained with a tomographic setup, with additional detector(s) off axis to record diffraction signals:
+•	nDetectors
+•	for each Detector: specs, position, rotation
+•	Rotation stage
+•	Translation stage
+•	Sample environment
+•	DetectorType 
+•	Image_stack
+
+After reconstruction, reconstructed 3D voxel :
+•	Representation of scalars, vectors and tensors, unit cell
+•	Spatial coordinates
+•	Time
 
 ## Resonance (__Anna__, Alex)
 The basic data structure for resonances imaging (at least from Anton's MCP-Timepix detector) is the following:
