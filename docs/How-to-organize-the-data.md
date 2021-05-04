@@ -72,7 +72,7 @@ For tomography time series there are three options depending on the acquisition 
 ### Reference data
 The minimum of reference data for a tomography experiment is the __flat field__ image. Most detectors also require __dark current__ images, some detectors are calibrated to acquire images with zero-bias images. These images are traditional for any neutron imaging experiment and are needed for the normalization using Beer-Lambert's law :
 
-<img src="http://latex.codecogs.com/svg.latex?I=I_0\,e^{-\int \mu(x)\,dx}\quad{}\rightarrow\quad{} p=-\ln\left(\frac{I/I_0}\right)=\int \mu(x)\,dx" border="0"/>
+<img src="https://latex.codecogs.com/svg.latex?I=I_0\cdot{}e^{-\int{}\mu(x)\,dx}\rightarrow%20p=-\ln\left(\frac{I}{I_0}\right)=\int{}\mu(x)\,dx" border="0"/>
 
 
 In addition to the flat field and dark current images there are also some more reference images that should be stored. Examples are:
