@@ -12,6 +12,13 @@ Input: Datastream from detectors
 
 Output: A single file or multiple files with raw image data possibly organized in folders depending on complexity.
 
+# Coordinate system orientation tranformations
+Provide axis transform matrix to define directions relative to for exmaple a Cathesian coordinate system oriented in the beam direction. 
+
+## Instrument coordinate system 
+
+## Detector plane orientation
+
 # White beam techniques
 
 ## Radiography (__Jean__)
@@ -63,9 +70,17 @@ For tomography time series there are three options depending on the acquisition 
 - Golden ratio acquisition requires all projections to be in the same file as this is an infinite series of non-overlapping projections angles.
 
 ### Reference data
-The minimum of reference data for a tomography experiment is the __flat field__ image. Most detectors also require __dark current__ images, some detectors are calibrated to acquire images with zero-bias images. These images are traditional for any neutron imaging experiment.
+The minimum of reference data for a tomography experiment is the __flat field__ image. Most detectors also require __dark current__ images, some detectors are calibrated to acquire images with zero-bias images. These images are traditional for any neutron imaging experiment and are needed for the normalization using Beer-Lambert's law :
 
-Sample and background scattering is the origin of biases in the images. It is possible to correct using different methods, at PSI the methods described in the publications by [Boillat at al.](https://doi.org/10.1364/OE.26.015769) and [Carminari et al](https://doi.org/10.1371/journal.pone.0210300). These methods require two additional references with a black body grid inserted (with and without samples present). 
+<img src="http://latex.codecogs.com/svg.latex?I=I_0\,e^{-\int \mu(x)\,dx}\quad{}\rightarrow\quad{} p=-\ln\left(\frac{I/I_0}\right)=\int \mu(x)\,dx" border="0"/>
+
+
+In addition to the flat field and dark current images there are also some more reference images that should be stored. Examples are:
+- Sample and background scattering is the origin of biases in the images. It is possible to correct using different methods, at PSI the methods described in the publications by [Boillat at al.](https://doi.org/10.1364/OE.26.015769) and [Carminari et al](https://doi.org/10.1371/journal.pone.0210300). These methods require two additional references with a black body grid inserted (with and without samples present). 
+- Epithermal background for beamlines with direct w
+
+The souce intensity is also important to consider to obtain more reliable quantification of the values in the normalized images. Therefore, is common to correct for the [_radiant exposure_](https://en.wikipedia.org/wiki/Radiant_exposure). This can be done using measurements in the images or using sensor readings:
+- Radiant exposure measurements for each acquisition (1D). This would be a vector of the same character as the angle readings for the tomography. 
 
 ## Multi-modal imaging 
 With multi-modal imaging one or more detectors generate data simultaneaously or in sequence. This data is in the first understanding images, but it could in priciple also be other sensors like environment data, weights, etc.
