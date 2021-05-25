@@ -178,51 +178,53 @@ Any of the methods can be reordered in the scheme as described above by looking 
 If the filesize would be too large to handle, we can link multiple files.
 In any case, the smallest subset of data would be a phase scan.
 
-## Polarized neutron imaging (__Anders__, Alessandro, Soren)
+## Polarized neutron imaging (Soren, __Anders__, Alessandro)
 
-In one acquisition:
+* Beam
+  * Type (Mono-chromatic / White beam / ToF)
+  
+* Polarizer
+  * [NXPolarizer](https://manual.nexusformat.org/classes/base_classes/NXpolarizer.html#index-0)
+  * ID
+  * Name
+  * Size (opening dimensions)
+  * Position (position in lab reference frame)
+  * State (ON/OFF)
+	
+* Spinflipper
+  * [NXflipper](https://manual.nexusformat.org/classes/base_classes/NXflipper.html#nxflipper) 
+  * ID
+  * Name
+  * Type (X, Y or Z rotation axis, can also be defined by a rotation matrix)
+  * Size (opening dimensions)
+  * Position (position in lab reference frame)
+  * State (ON/OFF)
 
-Beam
-	   Mono-chromatic / ToF
-Polarizer
-      ID 
-      Name
-      Type (3He, (super-)mirror or crystal)
-      Size
-      Position
-      State 
-Spin-flipper ()
-      ID
-      Name
-      Type (X, Y or Z rotation axis, can also be defined by a rotation matrix)
-      Size
-      Position
-      State (ON/OFF)
-Spin-rotator (90 degrees) – multiple entries; typically used before and after the sample
-   ID
-   Name
-   Type (X, Y or Z rotation axis, can also be defined by a rotation matrix)
-   Size (Opening) 
-   Position (Center)
-   State (ON/OFF)
-Analyzer
-   ID 
-   Name
-   Type (3He, (super-)mirror or crystal)
-   Size
-   Position
-   State
-Rotation stage
-Translation stage
-Sample environment
-DetectorType 
-Image_stack
+* Spin-rotator (90 degrees) – multiple entries; typically used before and after the sample
+  * [NXflipper](https://manual.nexusformat.org/classes/base_classes/NXflipper.html#nxflipper) 
+  * ID
+  * Name
+  * Type (X, Y or Z rotation axis, can also be defined by a rotation matrix)
+  * Size (opening dimensions)
+  * Position (position in lab reference frame)
+  * State (ON/OFF)
 
+* Analyzer
+  * [NXPolarizer](https://manual.nexusformat.org/classes/base_classes/NXpolarizer.html#index-0)
+  * ID
+  * Name
+  * Size (opening dimensions)
+  * Position (position in lab reference frame)
+  * State (ON/OFF)
 
-After reconstruction, reconstructed 3D voxel :
-   Representation of scalars, vectors and tensors
-   Spatial coordinates
-   Time
+* [NXTomo](https://manual.nexusformat.org/classes/applications/NXtomo.html) (This is the inner loop, to be repeated for all the spin configuations)
+
+* Check if this info is stored 
+  * Rotation stage
+  * Translation stage
+  * Sample environment
+  * DetectorType 
+  * Image_stack
 
 ### nGI with polarized neutrons
 
@@ -236,18 +238,17 @@ References from ToF can be stored in the same manner as for white beam, but now 
 ## Diffraction based (__Soren__)
 
 Can mostly be obtained with a tomographic setup, with additional detector(s) off axis to record diffraction signals:
-•	nDetectors
-•	for each Detector: specs, position, rotation
-•	Rotation stage
-•	Translation stage
-•	Sample environment
-•	DetectorType 
-•	Image_stack
+* [NXTomo](https://manual.nexusformat.org/classes/applications/NXtomo.html)
+* nDetectors (multiple detectors possible in diffraction mode)
+  * for each Detector: specs, position, rotation
+  * Detectortype (Farfield, Niearfield).
+  * Image_stack
+  
+* Check if this info is stored 
+  * Rotation stage
+  * Translation stage
+  * Sample environment
 
-After reconstruction, reconstructed 3D voxel :
-•	Representation of scalars, vectors and tensors, unit cell
-•	Spatial coordinates
-•	Time
 
 ## Resonance (__Anna__, Alex)
 The basic data structure for resonances imaging (at least from Anton's MCP-Timepix detector) is the following:
