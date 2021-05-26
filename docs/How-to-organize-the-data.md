@@ -222,8 +222,8 @@ In any case, the smallest subset of data would be a phase scan.
 * Check if this info is stored 
   * Rotation stage
   * Translation stage
-  * Sample environment
-  * DetectorType 
+  * Sample environment, [NXenvironment](https://manual.nexusformat.org/classes/base_classes/NXenvironment.html#nxenvironment) 
+  * Eventmode data, [NXInstrument](https://manual.nexusformat.org/classes/base_classes/NXinstrument.html#nxinstrument): [NXdetector](https://manual.nexusformat.org/classes/base_classes/NXdetector.html#nxdetector) position, [NXevent_data](https://manual.nexusformat.org/classes/base_classes/NXevent_data.html#nxevent-data): time 
   * Image_stack
 
 ### nGI with polarized neutrons
