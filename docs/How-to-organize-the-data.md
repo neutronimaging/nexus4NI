@@ -11,6 +11,15 @@ It should be aimed at keeping the number of files to a minimum to reduce read an
 Input: Datastream from detectors
 
 Output: A single file or multiple files with raw image data possibly organized in folders depending on complexity.
+# General information
+- Instrument
+- Source 
+- Institute
+- Date
+- Proposal number
+- User
+- Local contact
+- Sample description
 
 # Coordinate system orientation tranformations
 Provide axis transform matrix to define directions relative to for exmaple a Cathesian coordinate system oriented in the beam direction. 
