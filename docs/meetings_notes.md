@@ -30,7 +30,7 @@ Agenda:
  Soren Schmidt | ESS |
  Alex Makenzie | LANL |
  Joe Parker | J-PARC |
- Simon Sebold | FRM-II |
+ Simon Sebold | FRM-II | nGI, Python
  Anders Kaestner | PSI | Yoga
  Bill Chuirazzi | INL |
  Alessandro Tengattini | ILL |
