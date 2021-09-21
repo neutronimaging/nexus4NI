@@ -38,7 +38,7 @@ Agenda:
  Floriana Salvemini | ANSTO |
  Paul Kienzle | NIST|
  Dan Hussey | NIST |
- Gerrit Gunther | Helmholtz |
+ Gerrit Gunther | Helmholtz | Metadata, Python (h5py)
  Stephen Nneji | ISIS/Mantid |
  Dolica Akello-Egwel | ISIS/Mantid |
  Kenan Muric | ESS |
