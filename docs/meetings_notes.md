@@ -41,7 +41,7 @@ Agenda:
  Gerrit Gunther | Helmholtz | Metadata, Python (h5py)
  Stephen Nneji | ISIS/Mantid |
  Dolica Akello-Egwel | ISIS/Mantid |
- Kenan Muric | ESS |
+ Kenan Muric | ESS | Programming |
  Matteo Busi | PSI |
  Jean Bilheux | ORNL | Python programming
 
