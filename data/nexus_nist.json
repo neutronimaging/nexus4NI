@@ -403,11 +403,16 @@ var entry = {
             layout: "area",
             bit_depth_readout: "->?BitDepth",
             detector_readout_time: "->?ReadoutTime",
+            // TODO: what is count time when using number_of_cycles > 1?
+            // Suggest count_time = n*frame time for summed, frame time for
+            // mean/median so that rate is counts/count_time even when
+            // cycles > 1. Count uncertainty will need to be adjusted
+            // appropriately for the different conditions.
             count_time: "->?ExposureTime",
             start_time: "->?StartTimeLog",
             //stop_time: "->?StopTimeLog", // start_time+count_time
             //frame_time: "->?", // exposure time + dead time
-            number_of_cycles: "->?FramesToCombine",
+
             // Scintillator description
             sensor_material: {
                 value: "LiF",
@@ -416,10 +421,67 @@ var entry = {
             },
             sensor_thickness: "20 um",
             // TODO: sensor resolution function
+            // Inherent scintillator+lens resolution function. This will be
+            // added to each file so that data analysis is self contained.
+            // Gaussian width per pixel?
+            //point_spread_function: [[...]],  // PAK: non-standard
+
+            // TODO: what is pixel mask correction?
+            // Hot/dead pixels can be noted in a pixel mask
+            // bit 0=missing, 1=dead, 2=damped, 3=excited, 4=noisy, 6=clustered, 8=beamstop
+            //pixel_mask: [], // exclude = (pixel_mask&0xFFFF != 0)
+            //pixel_mask_applied: True|False, // Threshhold median?
+
+            // Detector efficiency correction (e.g., due to inhomogeneity in
+            // scintillator response across the beam). This isn't needed for
+            // reduction if you are scaling by an open beam measurement (the
+            // scale factors cancel) but it will change the uncertainty estimate
+            // if it has been applied before saving.
+            //flatfield
+            //flatfield_errors
+            //flatfield_applied
+
+            // Per-pixel wavelength response. Not needed if normalizing by an
+            // openbeam measurement.
+            //efficiency$NXdata: {
+            //    efficiency: [[...]],
+            //    wavelength: [[...]],
+            //}
+
+            // TODO: what is angular calibration for a detector?
+            //angular_calibration
+            //angular_callibration_applied
+
             // TODO: offset and gain value for scaling poisson uncertainty
-            //point_spread_function: ??  // PAK: non-standard
-            //saturation_value: "??", // hot pixel value
-            //underload_value: "??", // dead pixel value
+            // Detector gain: high | standard | fast | auto
+            // The available labels don't seem useful. A scale factor for
+            // Poisson uncertainty would be more useful. That is
+            //     pixel variance = pixel value / gain
+            //gain_setting: "auto",
+            // Pixel min/max. Values above saturation or below underload are invalid
+            //saturation_value: 2^64-1, // hot pixel value
+            //underload_value: 0, // dead pixel value
+
+            //TODO: indicate how frames are combined in robust measurements
+            // For robust measurements, spread across multiple frames. The
+            // nexus standard assumes summation, but it could be sum, mean,
+            // median, robust mean. We could either use an attribute on
+            // number of cycles (@mode=sum|mean|median|robust) or new field such
+            // as cycle_combination_mode. Or we could add additional acquistion
+            // modes, mean|median|robust.
+            number_of_cycles: "->?FramesToCombine",
+            //acquisition_mode: gated|triggered|summed|event|histogrammed|decimated
+
+            // Detector deadtime (paralyzing, nonparalyzing) can lead to
+            // nonlinear detector response as a function of count rate. This
+            // might be corrected in the acquisition software before recording
+            // the data. Assuming non-paralyzing deadtime constant tau then
+            //     Io = t Ro = t R / (1 - tau R) = I / (t - tau I)
+            // Scintillator+detector response may be far more complicated, but
+            // this model should be good enough below some saturation rate.
+            //dead_time
+            //countrate_correction_applied
+            //saturation_rate  [PAK nonstandard]
 
             // pixel size ZWO 6200mm=3.76 1600mm=3.8 Andor NEO=6.5 asilicon=127
             // Record the pixel size in lab coordinates (after lens magnifcation)
@@ -474,12 +536,26 @@ var entry = {
             // a median filter. This may occur in the DAQ before the image is
             // written, or may not be needed.
             // TODO: leave channel dimension in data even if when it is length one?
+            // TODO: maybe use channel for polarization instead of repeats
             //data: "->?ImageStack",
             data: {
                 type: "NX_INT16[]", // [k,n,height,width,TOF]
                 value: [0], // placeholder for the image stack
                 description: "Detector images. Use image_key to identify projections, open beam and dark beam scans."
+                axes: ["."] // e.g., ["frame", "channel", "y", "x", "wavelength"]
+
             },
+            // NeXus has a slot for uncertainty but this is inherently a
+            // derived value which is best filled in by reduction, especially
+            // for tomography measurements or others which have many frame.
+            // That does mean that preprocessing steps done during acquisition
+            // are recorded so that data_errors can be estimated.
+            //    pixel_mask, pixel_mask_applied
+            //    flatfield, flatfield_applied
+            //    angular_calibration, angular_calibration_applied (??)
+            //    number_of_cycles, cycle_combination_mode
+            //    gain_setting, saturation_value, underload_value
+            //data_errors: ...
 
             // PAK proposal: list of image filenames as subdirectories, with
             // the hdf file in the root. image_files contains a list of
@@ -687,10 +763,6 @@ var entry = {
             // Note: these are written directly as nexus configuration fields
             // since they are a different shape from the image stack and
             // aren't updated frame by frame.
-
-            // Inherent scintillator+lens resolution function. This will be
-            // added to each file so that data analysis is self contained.
-            //point_spread_function: [[...]],
         },
     }
 }
