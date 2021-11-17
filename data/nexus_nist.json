@@ -25,7 +25,6 @@ var entry = {
     //    file_name: "->?trajectory.configFile",
     //    description: "Additional program data, such as the script file which the program ran",
     //},
-    // TODO: maybe an intent field indicating radiography, tomography, phase imaging, etc.
     control$NXmonitor: {
         // NeXus standard uses start_time and end_time as ISO8601 strings. This
         // would require a lot of processing if you have a long scan, so NCNR
@@ -713,12 +712,8 @@ var entry = {
             // * point spread frunction measures pinholes and/or sharp edges
             // * deadtime estimates need counts with/without attenuators
 
-            // TODO: assign image set number to each frame
-            // To sort projections into separate NXdata groups it might be
-            // useful to have an image_set identifier associated with each
-            // frame. But what about the open and dark frames that can be
-            // used by multiple groups?
-            //image_set: 1, // Index of data group for each projection
+            // TODO: maybe provide key to sort frames into tomographs
+            //image_set: [0, ...], // tomogram id for each frame
         },
     },
 
@@ -775,6 +770,7 @@ var entry = {
     image_sets$NXcollection: {
       // @axes: xi
       //xi: [xi0, xi1, xi2, ...],
+      // TODO: maybe an intent field indicating radiography, tomography, phase imaging, etc.
       // TODO: maybe a new class, NXimage_set?
       set00000$NXdata: {
         // PAK: non-standard   gridded data
@@ -863,10 +859,6 @@ var entry = {
       },
       //set00001$NXdata: ...
     },
-    // TODO: maybe group datasets into an NXcollection
-    // Set the list of scanned variables (temperature, xi, etc.) as an axes
-    // attribute to the collection. Create variables for each axis with one
-    // value per set.
 
     // TODO: maybe put thumbnail in each tomogram showing the first projection
     data$NXdata: {
