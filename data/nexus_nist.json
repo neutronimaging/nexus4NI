@@ -46,7 +46,7 @@ var entry = {
         //efficiency: "0.1 %",
         //absorption: "0 %",
         //sampled_fraction: { value: 0.1, units: "" },
-        //type: "??"  // Type of monitor        
+        //type: "??"  // Type of monitor
 
         // NCNR allows count by combination of time, monitor and detector region
         // each of which can have its own preset. This is more useful than having
@@ -72,10 +72,28 @@ var entry = {
         //changer_position: "->slotIndex.index",
         //sample_holder_description:  "->slotIndex.description",
 
+        // Turning may be step-wise or continuous. If stepwise, may be
+        // incremental or golden ratio. If continuous, maybe using multiple
+        // rotations to increase count time. These can triggered on the
+        // theta zero position so that counts can be accumulated across
+        // multiple revolutions.
         // NXdetector uses polar_angle and azimuthal_angle.
         // NXcanSAS uses yaw, pitch and roll.
-        rotation_angle: "->?SampleYaw", // sample rotation (degrees)
-        //equatorial_angle: {value: 0, units: "deg"},
+        rotation_angle: "->?SampleYaw", // rotation about the sample axis (degrees)
+        // For anisotropic phase scans either need to rotate the grating or
+        // rotate the sample, tilting its axis in the plane of the detector.
+        // TODO: better name than planar angle?
+        // PAK: non-standard
+        //planar_angle: "->?SampleRoll", // rotation about the beam (degrees)
+
+        // TODO: how to store multimodal data?
+        // Can store X-ray and Neutron in separate entries. Sample can be
+        // duplicated or linked. Shouldn't matter since it is small relative
+        // to the detector. Other option is to put Neutron and Xray as
+        // separate instruments in the entry but that just complicates
+        // processing for very little gain. This is especially true since
+        // instrument may be operated either simultaneously or in alterance
+        // (one measured after the other with no change in sample rotation).
 
         // z_translation is a non-standard field
         //  * NXsample has x_translation
@@ -152,7 +170,7 @@ var entry = {
         //  DEVICE2_NAME2_CONTROL2: { ... },
         //  ...
         //},
- 
+
 // Write out other equipment***************************************************************
         // magnetic_field$NXsensor: {
         //       // PAK: start time is stored in the attribute value_log/time@start
@@ -195,38 +213,6 @@ var entry = {
         //     },
         // },
     },            //end of sample
-    data$NXdata: {
-        // The NXdata block should exist and contain something plottable so
-        // that the nexus directory browser can show a plot. Use the first
-        // projection so users can quickly see what sample is in the beam.
-        // Maybe use 1:10 scale so file is smaller, adjusting x, y to suit.
-        // TODO: Index into instrument/detector/data if available.
-        // Indexing that the file stores the image stack instead of filenames
-        // and that HDF supports indexing into a block of data rather than
-        // the whole field.
-        data: {
-            type: "NX_INT16",
-            value: [], // image[nH, nW],
-            description: "{sample.description} (first projection)",
-            axes: ["y","x"],
-        },
-        x: {
-            type: "NX_FLOAT",
-            value: "(=arange(?MaxHeight) - 0.5*?MaxHeight) * ?PixelSize * ?instrument/lens/reproduction_ratio / 1000",
-            units: "mm", 
-        },
-        y: {
-            type: "NX_FLOAT",
-            value: "(=arange(?MaxWidth) - 0.5*?MaxWidth) * ?PixelSize * ?instrument/lens/reproduction_ratio / 1000",
-            units: "mm", 
-        },
-    },
-    // As an alternative to a meaningless NXdata we can use entry/thumbnail.
-    //thumbnail$NXnote : {
-    //    description: "{sample.description} (first projection)",
-    //    type: "application/png",
-    //    data: "", // Placeholder for thumbnail image as png file
-    //},
     instrument$NXinstrument: {
         name: "INFER",
         source$NXsource: {
@@ -235,6 +221,8 @@ var entry = {
             type: "Reactor Neutron Source",
             probe: "neutron",
             power: "20 MW",
+            //current, voltage available for X-ray sources
+            //proton current for spallation sources (see SNS files for details)
         },
         shutter$NXaperture: {
             description: "Beam shutter",
@@ -255,6 +243,7 @@ var entry = {
             //temperature: "->filterTemperature.sensor0",
             //temperature_log: "->filterTemperature.sensor0_log"
         },
+        // TODO: maybe use NXbeam to define divergence and spectrum?
         monochromator$NXmonochromator: {
             wavelength: "->?Wavelength",
             wavelength_errors: { // Bad name for wavelength spread
@@ -271,8 +260,26 @@ var entry = {
             //},
         },
 
+        // Polarized imaging
+        // TODO: Do we need more than one spin angle?
+        // TODO: Do we need angle or just up and down?
+        // TODO: Can we use an integer for combined spin state in+out?
+        // TODO: Is the selected spin state wavelength dependent?
+        //NXspin: { // PAK: non-standard
+        //    // control fields
+        //    in: [n], // angle or NaN for uncontrolled
+        //    out: [n], // angle or NaN for uncontrolled
+        //    // devices used to realize the desired spin state
+        //    polarizer$NXPolarizer: {},
+        //    flipper$NXflipper: {},
+        //    presample_flipper$NXflipper: {},
+        //    postsample_flipper$NXflipper: {},
+        //    ...
+        //    analyzer$NXPolarizer: {},
+        //}
+
         // Aperture could be pinhole, slit or grating.
-        //aperture$NXpinhole{
+        //aperture$NXpinhole: {
         //    description: "Source pinhole",
         //    distance: "?? mm",
         //    diameter: "?? mm",
@@ -304,6 +311,19 @@ var entry = {
         // instead of pinhole, slit, square, grating). The replacement
         // for NXgeometry (NXtransformations) doesn't even define shape.
 
+        // Diffuser smooths beam inhomogeneities at the cost of decreased
+        // intensity and increased divergence. They can be represented as
+        // an attenuator with a divergence.
+        //diffuser$NXattenuator: {
+        //    distance: "?? mm",
+        //    type: "composition",
+        //    thickness: "?? mm",
+        //    // TODO: how do we specify a dimensionless constant?
+        //    attenuator_transmission: "1.0 dimensionless",
+        //    // TODO: is this divergence or is it the change in divergence?
+        //    angular_divergence: "?? degrees", // PAK: nonstandard
+        //},
+
         moire$NXmoire: { // PAK: non-standard
             // Moire period on scintillator for two-grating interferometer is
             // Pd = L Pg / D, with L the slit-to-scintillator distance, Pg the
@@ -332,15 +352,22 @@ var entry = {
                 value: "=360 * (-?G0_x + nanmax(?G0_x)) / ?instrument/moire/grating_2/period",
                 units: "degrees",
             },
+            rotation: {
+                description: "Rotation of the Moire pattern about the beam",
+                value: 0.0,
+                units: "degrees",
+            },
             grating_1$NXgrating: {
                 distance: "-3.11 m", // Negative (upstream) distance from sample zero positision.
                 period: "1.2 mm",
+                rotation: "0 degrees",
                 //duty_cycle: 0.5,
                 //depth: "20 um",
             },
             grating_2$NXgrating: {
                 distance: "-3.10 m", // Negative (upstream) distance from sample zero positision.
                 period: "1.2 mm", // Grating period units must match phase stepper units
+                rotation: "0 degrees",
                 //duty_cycle: 0.5,
                 //depth: "20 um",
                 // The Moire phase is controlled by translation of second grating
@@ -382,7 +409,7 @@ var entry = {
                 value: 1.3,  // 50 mm lens
             },
             // The amount of magnification from the lens.
-            // TODO: do we scale detector pixels by 
+            // TODO: do we scale detector pixels by
             reproduction_ratio: {
                 description: "Magnification factor for pixels. Pitch on the scintillator is pitch on the detector times reproduction ratio.",
                 units: "",  // unitless
@@ -412,6 +439,11 @@ var entry = {
             start_time: "->?StartTimeLog",
             //stop_time: "->?StopTimeLog", // start_time+count_time
             //frame_time: "->?", // exposure time + dead time
+
+            // Some detectors have their own temperature controllers, which
+            // should be recorded here separate from the sample temperature.
+            //temperature: "->detectorTemperature.sensor0",
+            //temperature_log: "->detectorTemperature.sensor0_log"
 
             // Scintillator description
             sensor_material: {
@@ -452,7 +484,6 @@ var entry = {
             //angular_calibration
             //angular_callibration_applied
 
-            // TODO: offset and gain value for scaling poisson uncertainty
             // Detector gain: high | standard | fast | auto
             // The available labels don't seem useful. A scale factor for
             // Poisson uncertainty would be more useful. That is
@@ -462,15 +493,22 @@ var entry = {
             //saturation_value: 2^64-1, // hot pixel value
             //underload_value: 0, // dead pixel value
 
+            // TODO: offset and gain value for scaling poisson uncertainty
+            // Beer-Lambert, p = -ln(I/Io), requires bias correction. This
+            // happens automatically with dark beam subtraction. Gain is also
+            // self correcting with I/Io division. Both are required for
+            // uncertainty estimation.
+            //bias: 0., // value at zero neutrons
+            //gain: 1., // counts per neutron
+
             //TODO: indicate how frames are combined in robust measurements
             // For robust measurements, spread across multiple frames. The
             // nexus standard assumes summation, but it could be sum, mean,
             // median, robust mean. We could either use an attribute on
             // number of cycles (@mode=sum|mean|median|robust) or new field such
-            // as cycle_combination_mode. Or we could add additional acquistion
-            // modes, mean|median|robust.
+            // as cycle_combination_mode. Or we could add additional acquisition
+            // modes, ...|mean|median|robust.
             number_of_cycles: "->?FramesToCombine",
-            //acquisition_mode: gated|triggered|summed|event|histogrammed|decimated
 
             // Detector deadtime (paralyzing, nonparalyzing) can lead to
             // nonlinear detector response as a function of count rate. This
@@ -526,7 +564,16 @@ var entry = {
             distance: "20 mm",  // distance to sample=0 position for sensor
             //status: "->singleDetector.active", // "in|out"
 
+            // Diffraction measurements may have mulitple detectors, each of
+            // which is at a different angle. Or it may have a single detector
+            // which can rotate around the sample.
+            polar_angle: "0 degrees",
+
             // *** Image storage ***
+
+            // TODO: check how SNS handles event data
+            //acquisition_mode: gated|triggered|summed|event|histogrammed|decimated
+            //events$NXevent_data: {...}  // if acquisition_mode is 'event'
 
             // Two ways of handling images: in-place or separate files.
             // In-place data frames, with TOF as final dimension.
@@ -607,7 +654,7 @@ var entry = {
             //image_files: [
             //   sample_p4d2_p0d0_p0d0_001.tif ... sample_p5d1_p359p0_p1d2_001.tif
             //   sample_p5d2_p0d0_p0d0_001.tif ... sample_p6d2_p359p0_p1d2_001.tif
-            //   dark_001.tif dark_002.tif 
+            //   dark_001.tif dark_002.tif
             //   open_p004d200_001.tif ... open_p006d5000_001.tif],
             //image_files@width: 6000
             //image_files@height: 4500
@@ -636,133 +683,243 @@ var entry = {
             // of "sample", "sample+can", etc, but we want to use
             // integer values instead of strings, and anyway dark beam
             // is not (currently) one of the options.
-
-            // NXtomophase for phase tomography requires a set of phase steps
-            // for each projection and for the flat field measurement, but not
-            // the dark current measurement. It splits the data into different
-            // detector groups for flat field, dark current and projection,
-            // with a sequence number to tie them into NXmonitor, etc. This
-            // allows the projection data to have an additional phase
-            // dimension, but all supporting information needs to be indexed
-            // by this sequence number.
-
-            // Phase tomograph with nflat=1 nphase=5 nrotation=100 ndark=2:
-            //NXinstrument/bright_field/sequence_number: [0,1,2,3,4]
-            //NXinstrument/bright_field/data: [5 x H x W]
-            //NXinstrument/sample/sequence_number: [[5,6,7,8,9],[10,11,12,13,14],...]
-            //NXinstrument/sample/data: [100 x 5 x H x W]
-            //NXinstrument/dark_field/sequence_number: [505, 507]
-            //NXinstrument/dark_field/data: [2 x H x W]
-
-            // PAK proposal: Replace NXtomophase groups (sample, bright_field,
-            // dark_field) with fields (projection, open_beam, dark_beam) in
-            // the detector group. These fields will be equivalent to the
-            // sequence_number fields of the NXtomophase groups, giving the
-            // 0-origin index into the image stack and instrument configuration
-            // for each measurement. Unlike NXtomophase, the images will stored
-            // together in one stack rather than a separate stack in each group.
-            // Note: NXtomophase does not specify 0-origin or 1-origin.
+            // TODO: additional keys for specialized reference measurements
+            // TODO: geometry of tungsten plate, absorber grid, etc?
+            // Looking through nexus4NI/docs/How-to-organize-the-data.md
+            // there are several reference measurements that need indices:
+            // * multimodal needs open beam and dark beam with neutron-xray combos
+            // * resonance imaging can measure sample and open beam with and without
+            //   tungsten plate to estimate energy dependent backgrounds
+            // * radiography can measure sample and open beam with and without
+            //   absorber grid to estimate sample and air scatter
+            // Proposed keys:
+            //    open-open=1 (open equals multimodal both open)
+            //    dark-dark=2 (dark equals mulitmodal both dark)
+            //    open-dark=3 (neutron open, x-ray dark)
+            //    dark-open=4 (neutron dark, x-ray open)
+            // Use bit 5 to indicate that reference is present (tungsten
+            // or absorber grid, depending on measurement type)
+            //    ref+projection=32
+            //    ref+open=33
+            //    ref+dark=34
+            //    ref+open-dark=35
+            //    ref+dark-open=36
+            // Alternative: treat reference as a sample component that is
+            // present or absent. That will probably be harder to work with.
             //
-            // This scheme supports various radiography and tomography
-            // measurements such as:
-            //    radiography: open[1], proj[1], dark[1]
-            //    robust radiography: open[nrep], proj[nrep], dark[nrep]
-            //        Use median filtering over nrep to tamp down gamma signal
-            //    spectral imaging: open[nwavelength], proj[nwavelength], dark[1]
-            //    tomography: open[1], proj[nrotation], dark[1]
-            //    spectral tomography: open[nwavelength], proj[nwavelength, nrotation], dark[1]
-            //    phase imaging: open[nphase], proj[nphase], dark[1]
-            //    xi imaging: open[nwavelength,nperiod,nphase], proj[nxi,nphase], dark[1]
-            //        correlation length xi is defined by wavelength, period
-            //        and sample z, but not in a complete grid.
-            //    robust xi tomography:
-            //        open[nwavelength,nphase,nrep]
-            //        proj[nxi,nrotation,nphase,nrep]
-            //        dark[nrep]
-            //    kinematic radiography: open[1], proj[ntime], dark[1]
-            //    magnetic radiography: open[nspin], proj[nspin], dark[1]
-            // The type of measurement is determined by the axes. These should
-            // be indicated with the @axes attribute in the projection field,
-            // with standard axis names:
-            //     xi rotation phase frame y x  # radiography/tomography/phase imaging
-            //     wavelength                   # spectral imaging
-            //     start_time                   # kinematic experiments
-            //     temperature pressure spin... # sample environment fields
-            //     changer_position             # if storing all in the same entry
-            // We don't need to loop over z or period because those the
-            // triple (z, wavelength, period) is captured in xi, and anyway
-            // they won't be sampled on a complete grid.
-            // For each axis there should be a field of the same name giving
-            // the value. Some of them (rotation, temperature, pressure, ...)
-            // need to be linked from entry/sample.
-            // Different slots on the sample changer ought to be stored in
-            // different entries, but if they are not then changer_position
-            // may be a separate dimension.
-            // On TOF machines radiography and tomography are automatically
-            // spectral imaging and spectral tomography unless you sum across
-            // the TOF channels in the image frames.
-            // Measurements might not form a complete grid. For example, you
-            // may use a high resolution tomography for the first sample
-            // condition and fewer angles for subsequent conditions because
-            // you have the high resolution condition as a seed for the
-            // tomo reconstruction.  These lower resolution tomos could be
-            // stored in different entries, or you could leave them in a
-            // flat image stack, and figure out which angles you have for
-            // which sample condition in your reconstruction software. Similarly
-            // when searching a phase diagram: the sample environment
-            // dimensions won't form a grid.
-            // TODO: add dimension for irregualar sampling in a phase diagram
-            // TODO: store spin (-- -+ +- ++) in sample as binary 00 01 10 11
-            // TODO: provide 1-D values for axes fields; currently they are n-D
-            // TODO: index images into tomograms for irregular grids
+            // There are also calibration measurements, but these are rare
+            // enough to be treated as "other":
+            // * lens correction measures a regular grid
+            // * point spread frunction measures pinholes and/or sharp edges
+            // * deadtime estimates need counts with/without attenuators
 
-            open_beam: {
-                type: "NX_UINT8[]",
-                value: [0], // placeholder for [[k1, k2, k3], ...]
-                description: "Index of open beam images in the image stack.",
-                axes: ["."], // Placeholder for ['axis1', 'axis2', ...] 
-            },
-            dark_beam: {
-                type: "NX_UINT8[]",
-                value: [0], // placeholder for [[k1, k2, k3], ...]
-                description: "Index of dark beam images in the image stack.",
-                axes: ["."], // Placeholder for ['axis1', 'axis2', ...] 
-            },
-            projection: {
-                type: "NX_UINT8[]",
-                value: [0], // placeholder for [[k1, k2, k3], ...]
-                description: "Index of projection images in the image stack.",
-                axes: ["."], // Placeholder for ['axis1', 'axis2', ...] 
-            },
-            phase_axis: {
-                type: "NX_FLOAT[]", // number of phases in projection grid
-                value: [], // placeholder phase axis values
-                description: "Project phase axis values",
-                units: "degrees",
-            },
-            rotation_axis: {
-                type: "NX_FLOAT[]", // number of phases in projection grid
-                value: [], // placeholder rotation axis values
-                description: "Project rotation axis values",
-                units: "degrees",
-            },
-
-            // If open beam or dark current were measured separately the we
-            // need to record their location so the reduction program can
-            // find them automatically.
-            //open_beam_file: "path/to/open_beam",
-            //dark_beam_file: "path/to/dark_beam",
-
-            // Example: phase tomography nopen=1 nphase=5 nrotation=100 ndark=2:
-            //data: [507 x H x W]
-            //open_beam[1,5]: [[0,1,2,3,4]],
-            //dark_beam[2]: [505,506],
-            //projection[100,5]: [[5,6,7,8,9],[10,11,12,13,14],...],
-            //phase_axis[5]: [0.0, 36.0, 72.0, 108.0, 144.0],
-            //rotation_axis[100]: [0.0, 3.6, 7.2, ..., 356.4],
-            // Note: these are written directly as nexus configuration fields
-            // since they are a different shape from the image stack and
-            // aren't updated frame by frame.
+            // TODO: assign image set number to each frame
+            // To sort projections into separate NXdata groups it might be
+            // useful to have an image_set identifier associated with each
+            // frame. But what about the open and dark frames that can be
+            // used by multiple groups?
+            //image_set: 1, // Index of data group for each projection
         },
-    }
+    },
+
+    // Goal is to support various imaging measurements such as:
+    //    radiography: open[1], proj[1], dark[1]
+    //    robust radiography: open[nrep], proj[nrep], dark[nrep]
+    //        Use median filtering over nrep to tamp down gamma signal
+    //    spectral imaging: open[nwavelength], proj[nwavelength], dark[1]
+    //    tomography: open[1], proj[nrotation], dark[1]
+    //    spectral tomography: open[nwavelength], proj[nwavelength, nrotation], dark[1]
+    //    phase imaging: open[nphase], proj[nphase], dark[1]
+    //    phase anisotropy: open[nangle, nphase], proj[nangle, nphase], dark[1]
+    //    xi imaging: open[nwavelength,nperiod,nphase], proj[nxi,nphase], dark[1]
+    //        correlation length xi is defined by wavelength, period
+    //        and sample z, but not in a complete grid.
+    //    robust xi tomography:
+    //        open[nwavelength,nphase,nrep]
+    //        proj[nxi,nrotation,nphase,nrep]
+    //        dark[nrep]
+    //    kinematic radiography: open[1], proj[ntime], dark[1]
+    //    polarized radiography: open[nspin], proj[nspin], dark[1]
+    //    resonance imaging
+    //    diffraction imaging
+    //    multimodal imaging (neutron and xray) --- see below
+
+    // Current standard NXtomophase
+    //
+    // NXtomophase for phase tomography requires a set of phase steps
+    // for each projection and for the flat field measurement, but not
+    // the dark current measurement. It splits the data into different
+    // detector groups for flat field, dark current and projection,
+    // with a sequence number to tie them into NXmonitor, etc. This
+    // allows the projection data to have an additional phase
+    // dimension, but all supporting information needs to be indexed
+    // by this sequence number. These are saved as separate NXdetector
+    // groups inside NXinstrument.
+    //
+    // Example phase tomogram with nflat=1 nphase=5 nrotation=100 ndark=2
+    //NXinstrument/bright_field/sequence_number: [0,1,2,3,4]
+    //NXinstrument/bright_field/data: [5 x H x W]
+    //NXinstrument/sample/sequence_number: [[5,6,7,8,9],[10,11,12,13,14],...]
+    //NXinstrument/sample/data: [100 x 5 x H x W]
+    //NXinstrument/dark_field/sequence_number: [505, 507]
+    //NXinstrument/dark_field/data: [2 x H x W]
+
+    // PAK proposal: Replace NXtomophase groups (sample, bright_field,
+    // dark_field) with NXdata fields (projection, open_beam, dark_beam).
+    // These fields will be equivalent to the sequence_number fields of
+    // the NXtomophase groups, giving the 0-origin index into the image
+    // stack and instrument configuration for each measurement. Unlike
+    // NXtomophase, the images will be stored in one stack rather than
+    // using separate stacks in each group.
+    // Use separate NXdata for each tomogram
+    image_sets$NXcollection: {
+      // @axes: xi
+      //xi: [xi0, xi1, xi2, ...],
+      // TODO: maybe a new class, NXimage_set?
+      set00000$NXdata: {
+        // PAK: non-standard   gridded data
+        open_beam: {
+            type: "NX_UINT8[]",
+            value: [0], // placeholder for [[k1, k2, k3], ...]
+            description: "Index of open beam images in the image stack.",
+            axes: ["."], // Placeholder for ['axis1', 'axis2', ...]
+        },
+        dark_beam: {
+            type: "NX_UINT8[]",
+            value: [0], // placeholder for [[k1, k2, k3], ...]
+            description: "Index of dark beam images in the image stack.",
+            axes: ["."], // Placeholder for ['axis1', 'axis2', ...]
+        },
+        projection: {
+            type: "NX_UINT8[]",
+            value: [0], // placeholder for [[k1, k2, k3], ...]
+            description: "Index of projection images in the image stack.",
+            axes: ["."], // Placeholder for ['axis1', 'axis2', ...]
+        },
+        //open_beam_reference: {}   // image_key=33
+        //projection_reference: {}  // image_key=32
+        phase_axis: {
+            type: "NX_FLOAT[]", // number of phases in projection grid
+            value: [], // placeholder phase axis values
+            description: "Project phase axis values",
+            units: "degrees",
+        },
+        rotation_axis: {
+            type: "NX_FLOAT[]", // number of phases in projection grid
+            value: [], // placeholder rotation axis values
+            description: "Project rotation axis values",
+            units: "degrees",
+        },
+
+        // If open beam or dark current were measured separately the we
+        // need to record their location so the reduction program can
+        // find them automatically.
+        //open_beam_file: "path/to/open_beam", // PAK: non-standard
+        //dark_beam_file: "path/to/dark_beam", // PAK: non-standard
+
+        // Example: phase tomography nopen=1 nphase=5 nrotation=100 ndark=2:
+        //data: [507 x H x W]
+        //open_beam[1,5]: [[0,1,2,3,4]],
+        //dark_beam[2]: [505,506],
+        //projection[100,5]: [[5,6,7,8,9],[10,11,12,13,14],...],
+        //phase_axis[5]: [0.0, 36.0, 72.0, 108.0, 144.0],
+        //rotation_axis[100]: [0.0, 3.6, 7.2, ..., 356.4],
+        // Note: these are written directly as nexus configuration fields
+        // since they are a different shape from the image stack and
+        // aren't updated frame by frame.
+
+        // The type of measurement is determined by the axes. These should
+        // be indicated with the @axes attribute in the projection field,
+        // with standard axis names:
+        //     xi rotation phase frame y x  # radiography/tomography/phase imaging
+        //     wavelength                   # spectral imaging
+        //     start_time                   # kinematic experiments
+        //     temperature pressure spin... # sample environment fields
+        //     changer_position             # if storing all in the same entry
+        // We don't need to loop over z or period because those the
+        // triple (z, wavelength, period) is captured in xi, and anyway
+        // they won't be sampled on a complete grid.
+        // For each axis there should be a field of the same name giving
+        // the value. Some of them (rotation, temperature, pressure, ...)
+        // need to be linked from entry/sample.
+        // Different slots on the sample changer ought to be stored in
+        // different entries, but if they are not then changer_position
+        // may be a separate dimension.
+        // On TOF machines radiography and tomography are automatically
+        // spectral imaging and spectral tomography unless you sum across
+        // the TOF channels in the image frames.
+        // Measurements might not form a complete grid. For example, you
+        // may use a high resolution tomography for the first sample
+        // condition and fewer angles for subsequent conditions because
+        // you have the high resolution condition as a seed for the
+        // tomo reconstruction.  These lower resolution tomos could be
+        // stored in different entries, or you could leave them in a
+        // flat image stack, and figure out which angles you have for
+        // which sample condition in your reconstruction software. Similarly
+        // when searching a phase diagram: the sample environment
+        // dimensions won't form a grid.
+        // TODO: add dimension for irregualar sampling in a phase diagram
+        // TODO: provide 1-D values for axes fields; currently they are n-D
+      },
+      //set00001$NXdata: ...
+    },
+    // TODO: maybe group datasets into an NXcollection
+    // Set the list of scanned variables (temperature, xi, etc.) as an axes
+    // attribute to the collection. Create variables for each axis with one
+    // value per set.
+
+    // TODO: maybe put thumbnail in each tomogram showing the first projection
+    data$NXdata: {
+        // The NXdata block should exist and contain something plottable so
+        // that the nexus directory browser can show a plot. Use the first
+        // projection so users can quickly see what sample is in the beam.
+        // Maybe use 1:10 scale so file is smaller, adjusting x, y to suit.
+        // TODO: Index into instrument/detector/data if available.
+        // Indexing that the file stores the image stack instead of filenames
+        // and that HDF supports indexing into a block of data rather than
+        // the whole field.
+        data: {
+            type: "NX_INT16",
+            value: [], // image[nH, nW],
+            description: "{sample.description} (first projection)",
+            axes: ["y","x"],
+        },
+        x: {
+            type: "NX_FLOAT",
+            value: "(=arange(?MaxHeight) - 0.5*?MaxHeight) * ?PixelSize * ?instrument/lens/reproduction_ratio / 1000",
+            units: "mm",
+        },
+        y: {
+            type: "NX_FLOAT",
+            value: "(=arange(?MaxWidth) - 0.5*?MaxWidth) * ?PixelSize * ?instrument/lens/reproduction_ratio / 1000",
+            units: "mm",
+        },
+    },
+    // As an alternative to a meaningless NXdata we can use entry/thumbnail.
+    //thumbnail$NXnote : {
+    //    description: "{sample.description} (first projection)",
+    //    type: "application/png",
+    //    data: "", // Placeholder for thumbnail image as png file
+    //},
+
+
+    // === Multimodal imaging ===
+    //
+    // NeXus standard says use a separate NXsubentry for each imaging mode:
+    //     https://manual.nexusformat.org/rules.html#nxsubentry-or-multi-method-data
+    // An non-standard alternative is to have a separate NXinstrument group
+    // for each beam path. This works because both modalities have the same
+    // NXimaging definition.
+    //
+    // Assume there is a one-to-one correspondance between frames and
+    // instrument configurations so that the tomogram NXdata groups apply
+    // equally to both modalities.  The 1-1 assumption fails for a continuous
+    // scan where the cameras have different frame rates, but we can store
+    // data in separate entries in that case.
+    //
+    // The image_key values for dark-open and open-dark refer explicitly to
+    // neutron and x-ray beam on states, so the same image_key vector can be
+    // used for both modalities.
+    //
+    // Multimodal anisotropy measurements won't work.
 }
